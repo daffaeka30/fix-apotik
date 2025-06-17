@@ -4,9 +4,11 @@
             <span class="app-brand-logo demo">
                 <img src="{{ url($setting->path_logo) }}" alt="Logo" width="40">
             </span>
-            <span class="app-brand-text demo menu-text fw-bolder ms-2" style="font-size: 14px;">
-                {{ $setting->nama_perusahaan }}
+            <span class="app-brand-text demo menu-text fw-bolder ms-2"
+                style="font-size: 14px; text-transform: none !important;">
+                {{ ucwords(strtolower($setting->nama_perusahaan)) }}
             </span>
+
         </div>
 
 
