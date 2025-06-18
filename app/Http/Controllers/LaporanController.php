@@ -53,25 +53,30 @@ class LaporanController extends Controller
             $pendapatan = $total_penjualan - $total_pembelian - $total_pengeluaran;
             $total_pendapatan += $pendapatan;
 
-            $row = array();
-            $row['DT_RowIndex'] = $no++;
-            $row['tanggal'] = tanggal_indonesia($tanggal, false);
-            $row['penjualan'] = format_uang($total_penjualan);
-            $row['pembelian'] = format_uang($total_pembelian);
-            $row['pengeluaran'] = format_uang($total_pengeluaran);
-            $row['pendapatan'] = format_uang($pendapatan);
+            if ($total_penjualan > 0 || $total_pembelian > 0 || $total_pengeluaran > 0) {
+                $row = array();
+                $row['DT_RowIndex'] = $no++;
+                $row['tanggal'] = tanggal_indonesia($tanggal, false);
+                $row['penjualan'] = format_uang($total_penjualan);
+                $row['pembelian'] = format_uang($total_pembelian);
+                $row['pengeluaran'] = format_uang($total_pengeluaran);
+                $row['pendapatan'] = format_uang($pendapatan);
 
-            $data[] = $row;
+                $data[] = $row;
+            }
         }
 
-        $data[] = [
-            'DT_RowIndex' => '',
-            'tanggal' => '',
-            'penjualan' => '',
-            'pembelian' => '',
-            'pengeluaran' => 'Total Pendapatan',
-            'pendapatan' => format_uang($total_pendapatan),
-        ];
+        if (count($data) > 0) {
+            $data[] = [
+                'DT_RowIndex' => '',
+                'tanggal' => '',
+                'penjualan' => '',
+                'pembelian' => '',
+                'pengeluaran' => 'Total Pendapatan',
+                'pendapatan' => format_uang($total_pendapatan),
+            ];
+        }
+
 
         return $data;
     }
@@ -90,7 +95,7 @@ class LaporanController extends Controller
         $data = $this->getData($awal, $akhir);
         $pdf  = PDF::loadView('laporan.pdf', compact('awal', 'akhir', 'data'));
         $pdf->setPaper('a4', 'potrait');
-        
-        return $pdf->stream('Laporan-pendapatan-'. date('Y-m-d-his') .'.pdf');
+
+        return $pdf->stream('Laporan-pendapatan-' . date('Y-m-d-his') . '.pdf');
     }
 }

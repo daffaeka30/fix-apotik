@@ -73,7 +73,10 @@
                     { data: 'pembelian' },
                     { data: 'pengeluaran' },
                     { data: 'pendapatan' },
-                ]
+                ],
+                language: {
+                    emptyTable: "Tidak ada data yang ditemukan dalam periode ini"
+                }
             });
 
             $('.datepicker').datepicker({

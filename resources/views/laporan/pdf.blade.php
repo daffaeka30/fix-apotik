@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Laporan Pendapatan</title>
-
     <style>
         body {
-            position: relative;
             font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .kop {
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .kop h2 {
+            margin: 0;
+        }
+
+        .kop p {
+            margin: 0;
+            font-size: 12px;
+        }
+
+        hr {
+            border: 1px solid #000;
+            margin-top: 8px;
+            margin-bottom: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        table th,
-        table td {
+        table th, table td {
             border: 1px solid #000;
-            padding: 5px;
+            padding: 6px;
             text-align: center;
         }
 
@@ -29,27 +45,21 @@
             background-color: #f2f2f2;
         }
 
-        .text-center {
+        .footer {
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .footer .left {
+            float: left;
+            width: 50%;
+            font-size: 13px;
+        }
+
+        .footer .right {
+            float: right;
+            width: 40%;
             text-align: center;
-        }
-
-        .mt-4 {
-            margin-top: 1.5rem;
-        }
-
-        .mt-5 {
-            margin-top: 3rem;
-        }
-
-        .signature {
-            position: absolute;
-            right: 0;
-            bottom: 50px;
-            text-align: right;
-        }
-
-        .signature p {
-            margin: 0;
         }
 
         .signature-space {
@@ -57,16 +67,23 @@
         }
     </style>
 </head>
-
 <body>
-    <h3 class="text-center">Laporan Pendapatan</h3>
-    <h4 class="text-center">
-        Tanggal {{ tanggal_indonesia($awal, false) }}
-        s/d
-        Tanggal {{ tanggal_indonesia($akhir, false) }}
-    </h4>
+    {{-- Kop Surat --}}
+    <div class="kop">
+        <h2>APOTEK SEHAT SENTOSA</h2>
+        <p>Jl. Kesehatan No. 123, Jakarta</p>
+        <p>Telp: (021) 12345678 | Email: apotek@sehat.com</p>
+    </div>
+    <hr>
 
-    <table class="table table-striped">
+    {{-- Judul --}}
+    <h3 style="text-align:center; margin-bottom: 0;">Laporan Pendapatan</h3>
+    <p style="text-align:center; margin-top: 2px;">
+        Tanggal {{ tanggal_indonesia($awal, false) }} s/d {{ tanggal_indonesia($akhir, false) }}
+    </p>
+
+    {{-- Tabel --}}
+    <table>
         <thead>
             <tr>
                 <th width="5%">No</th>
@@ -88,14 +105,22 @@
         </tbody>
     </table>
 
-    <!-- Tanda Tangan -->
-    <div class="signature">
-        <p>Jakarta, {{ tanggal_indonesia($akhir, false) }}</p>
-        <p><strong>Mengetahui,</strong></p>
-        <div class="signature-space"></div>
-        <p><strong><u>Nama Penanggung Jawab</u></strong></p>
-        <p>Admin Apotik</p>
+    {{-- Footer --}}
+    <div class="footer">
+        {{-- Informasi User yang Cetak --}}
+        <div class="left">
+            Dicetak oleh: <strong>{{ auth()->user()->name }}</strong><br>
+            Tanggal Cetak: {{ tanggal_indonesia(now()->format('Y-m-d'), false) }}
+        </div>
+
+        {{-- Tanda Tangan --}}
+        <div class="right">
+            <p>Jakarta, {{ tanggal_indonesia($akhir, false) }}</p>
+            <p><strong>Mengetahui,</strong></p>
+            <div class="signature-space"></div>
+            <p><strong><u>Nama Penanggung Jawab</u></strong></p>
+            <p>Admin Apotik</p>
+        </div>
     </div>
 </body>
-
 </html>

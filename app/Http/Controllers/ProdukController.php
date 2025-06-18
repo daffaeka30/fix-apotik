@@ -43,11 +43,11 @@ class ProdukController extends Controller
             ->addIndexColumn()
             ->addColumn('select_all', function ($produk) {
                 return '
-                    <input type="checkbox" name="id_produk[]" value="'. $produk->id_produk .'">
+                    <input type="checkbox" name="id_produk[]" value="' . $produk->id_produk . '">
                 ';
             })
             ->addColumn('kode_produk', function ($produk) {
-                return '<span class="label label-success">'. $produk->kode_produk .'</span>';
+                return '<span class="label label-success">' . $produk->kode_produk . '</span>';
             })
             ->addColumn('harga_beli', function ($produk) {
                 return 'Rp. ' . format_uang($produk->harga_beli);
@@ -57,7 +57,24 @@ class ProdukController extends Controller
             })
             ->addColumn('stok', function ($produk) {
                 return format_uang($produk->stok);
-            })
+            })->addColumn('expired', function ($produk) {
+    $today = now()->toDateString();
+    $soon = now()->addDays(30)->toDateString();
+    $expiredDate = $produk->expired;
+
+    if ($expiredDate < $today) {
+        // Sudah kadaluarsa
+        return '<span class="text-danger fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
+    } elseif ($expiredDate <= $soon) {
+        // Mendekati kadaluarsa (dalam 30 hari)
+        return '<span class="text-warning fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
+    } else {
+        // Masih aman
+        return tanggal_indonesia($expiredDate, false);
+    }
+})
+
+
             ->addColumn('aksi', function ($produk) {
                 return '
                 <div class="btn-action">
@@ -66,7 +83,7 @@ class ProdukController extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['aksi', 'kode_produk', 'select_all'])
+            ->rawColumns(['aksi', 'kode_produk', 'select_all', 'expired'])
             ->make(true);
     }
 
@@ -84,13 +101,40 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        $produk = Produk::latest()->first() ?? new Produk();
-        $request['kode_produk'] = 'P'. tambah_nol_didepan((int)$produk->id_produk +1, 6);
+        // Validasi terlebih dahulu
+        $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'stok' => 'required|integer|min:0',
+            'expired' => 'required|date|after_or_equal:today'
+        ]);
 
-        $produk = Produk::create($request->all());
+        // Generate kode produk
+        $prefix = 'OB';
+        $dateCode = date('Ym'); // Contoh: 202506
+
+        // Cari produk terakhir bulan ini
+        $lastProduk = Produk::where('kode_produk', 'like', "$prefix-$dateCode-%")
+            ->orderBy('kode_produk', 'desc')
+            ->first();
+
+        if ($lastProduk) {
+            $lastNumber = (int)substr($lastProduk->kode_produk, -4);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $kodeProduk = "{$prefix}-{$dateCode}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $request['kode_produk'] = $kodeProduk;
+
+        // Simpan produk
+        Produk::create($request->all());
 
         return response()->json('Data berhasil disimpan', 200);
     }
+
+
+
 
     /**
      * Display the specified resource.
@@ -115,6 +159,12 @@ class ProdukController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'stok' => 'required|integer|min:0',
+            'expired' => 'required|date|after_or_equal:today'
+        ]);
+
         $produk = Produk::find($id);
         $produk->update($request->all());
 

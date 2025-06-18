@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use PDF;
 use App\Models\Member;
 use App\Models\Setting;
@@ -38,17 +39,17 @@ class MemberController extends Controller
             ->addIndexColumn()
             ->addColumn('select_all', function ($produk) {
                 return '
-                    <input type="checkbox" name="id_member[]" value="'. $produk->id_member .'">
+                    <input type="checkbox" name="id_member[]" value="' . $produk->id_member . '">
                 ';
             })
             ->addColumn('kode_member', function ($member) {
-                return '<span class="label label-success">'. $member->kode_member .'<span>';
+                return '<span class="label label-success">' . $member->kode_member . '<span>';
             })
             ->addColumn('aksi', function ($member) {
                 return '
                 <div class="btn-action">
-                    <button type="button" onclick="editForm(`'. route('member.update', $member->id_member) .'`)" class="btn btn-sm btn-info btn-icon"><i class="bx bx-edit"></i></button>
-                    <button type="button" onclick="deleteData(`'. route('member.destroy', $member->id_member) .'`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
+                    <button type="button" onclick="editForm(`' . route('member.update', $member->id_member) . '`)" class="btn btn-sm btn-info btn-icon"><i class="bx bx-edit"></i></button>
+                    <button type="button" onclick="deleteData(`' . route('member.destroy', $member->id_member) . '`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
                 </div>
                 ';
             })
@@ -70,18 +71,46 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $member = Member::latest()->first() ?? new Member();
-        $kode_member = (int) $member->kode_member +1;
+        $request->validate([
+            'nama' => 'required|string|max:100',
+            'telepon' => 'required|string|max:20',
+            'alamat' => 'nullable|string|max:255',
+        ]);
 
-        $member = new Member();
-        $member->kode_member = tambah_nol_didepan($kode_member, 5);
-        $member->nama = $request->nama;
-        $member->telepon = $request->telepon;
-        $member->alamat = $request->alamat;
-        $member->save();
+        $prefix = 'MB';
+        $dateCode = date('ym'); // Contoh: 2506 (2025 Juni)
 
-        return response()->json('Data berhasil disimpan', 200);
+        // Ambil member terakhir yang pakai kode bulan ini
+        $lastMember = Member::where('kode_member', 'like', $prefix . $dateCode . '%')
+            ->orderBy('kode_member', 'desc')
+            ->first();
+
+        // Ambil nomor urut terakhir
+        if ($lastMember) {
+            $lastNumber = (int)substr($lastMember->kode_member, -5);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        // Bentuk kode lengkap
+        $kodeMember = $prefix . $dateCode . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+        try {
+            $member = new Member();
+            $member->kode_member = $kodeMember;
+            $member->nama = $request->nama;
+            $member->telepon = $request->telepon;
+            $member->alamat = $request->alamat;
+            $member->save();
+
+            return response()->json('Data berhasil disimpan', 200);
+        } catch (\Exception $e) {
+            Log::error('Gagal menyimpan member: ' . $e->getMessage());
+            return response()->json('Tidak dapat menyimpan data', 500);
+        }
     }
+
 
     /**
      * Display the specified resource.

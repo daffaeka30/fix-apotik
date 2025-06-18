@@ -102,15 +102,8 @@
 
 
 
-            <!-- Chart Section -->
-            <div class="bg-white p-6 rounded-xl shadow">
-                <h3 class="text-lg font-bold mb-4">Grafik Pendapatan {{ tanggal_indonesia($tanggal_awal, false) }} s/d
-                    {{ tanggal_indonesia($tanggal_akhir, false) }}</h3>
-                <canvas id="incomeChart" class="w-full h-64"></canvas>
-            </div>
-
-            <!-- Tables -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Tables (Recent Order Full Width, Others Below) -->
+            <div class="grid grid-cols-1 gap-6">
 
                 <!-- Recent Orders -->
                 <div class="bg-white p-6 rounded-xl shadow">
@@ -139,34 +132,76 @@
                     </div>
                 </div>
 
-                <!-- Low Stock Products -->
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h3 class="text-lg font-bold mb-4">Low Stock Product</h3>
-                    @if (count($low_stock_produk) > 0)
-                        <div class="overflow-x-auto">
-                            <table class="table-auto w-full text-left text-sm">
-                                <thead class="bg-gray-100 text-gray-700">
-                                    <tr>
-                                        <th class="p-2">Nama Produk</th>
-                                        <th class="p-2">Stok</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($low_stock_produk as $product)
-                                        <tr class="border-b">
-                                            <td class="p-2">{{ $product->nama_produk }}</td>
-                                            <td class="p-2">{{ $product->stok }}</td>
+                <!-- Low Stock & Expired Products side by side -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Low Stock Products -->
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <h3 class="text-lg font-bold mb-4">Low Stock Product</h3>
+                        @if (count($low_stock_produk) > 0)
+                            <div class="overflow-x-auto">
+                                <table class="table-auto w-full text-left text-sm">
+                                    <thead class="bg-gray-100 text-gray-700">
+                                        <tr>
+                                            <th class="p-2">Nama Produk</th>
+                                            <th class="p-2">Stok</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <p class="text-gray-500">Tidak ada produk dengan stok rendah.</p>
-                    @endif
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($low_stock_produk as $product)
+                                            <tr class="border-b">
+                                                <td class="p-2">{{ $product->nama_produk }}</td>
+                                                <td class="p-2">{{ $product->stok }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <p class="text-gray-500">Tidak ada produk dengan stok rendah.</p>
+                        @endif
+                    </div>
+
+                    <!-- Expired Soon Products -->
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <h3 class="text-lg font-bold mb-4">Produk Mendekati Expired</h3>
+                        @if (count($expired_soon) > 0)
+                            <div class="overflow-x-auto">
+                                <table class="table-auto w-full text-left text-sm">
+                                    <thead class="bg-gray-100 text-gray-700">
+                                        <tr>
+                                            <th class="p-2">Nama Produk</th>
+                                            <th class="p-2">Expired</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($expired_soon as $product)
+                                            <tr class="border-b">
+                                                <td class="p-2">{{ $product->nama_produk }}</td>
+                                                <td class="p-2 text-red-600 font-semibold">
+                                                    {{ \Carbon\Carbon::parse($product->expired)->format('d-m-Y') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <p class="text-gray-500">Tidak ada produk yang mendekati masa expired.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Grafik -->
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h3 class="text-lg font-bold mb-4">Grafik Pendapatan {{ tanggal_indonesia($tanggal_awal, false) }} s/d
+                        {{ tanggal_indonesia($tanggal_akhir, false) }}</h3>
+                    <canvas id="incomeChart" class="w-full h-64"></canvas>
                 </div>
             </div>
+
+
         </div>
+    </div>
 
     </div>
 @endsection

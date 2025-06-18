@@ -91,7 +91,12 @@
                     <div class="mb-3 row">
                         <label for="expired" class="col-sm-3 col-form-label">Tanggal Expired</label>
                         <div class="col-sm-9">
-                            <input type="date" name="expired" id="expired" class="form-control" required>
+                            <input type="date" name="expired" id="expired" class="form-control @error('expired') is-invalid @enderror" value="{{ old('expired') }}" min="{{ date('Y-m-d') }}" required>
+                            @error('expired')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
                     </div>
                 </div>

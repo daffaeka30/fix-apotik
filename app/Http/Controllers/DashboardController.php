@@ -45,8 +45,15 @@ class DashboardController extends Controller
         $recent_order = Penjualan::with('member', 'penjualanDetail.produk')->orderBy('created_at', 'desc')->take(5)->get();
         $low_stock_produk = Produk::where('stok', '<=', 5)->orderBy('stok', 'asc')->take(5)->get();
 
+        $expired_soon = Produk::whereDate('expired', '>=', now())
+            ->whereDate('expired', '<=', now()->addDays(30))
+            ->orderBy('expired', 'asc')
+            ->take(5)
+            ->get();
+
+
         if (auth()->user()->level == '1') {
-            return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan', 'recent_order', 'low_stock_produk'));
+            return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan', 'recent_order', 'low_stock_produk', 'expired_soon'));
         } else {
             return view('kasir.dashboard');
         }
