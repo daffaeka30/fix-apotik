@@ -8,6 +8,11 @@
     <title>Laporan Pendapatan</title>
 
     <style>
+        body {
+            position: relative;
+            font-family: Arial, sans-serif;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -35,8 +40,22 @@
         .mt-5 {
             margin-top: 3rem;
         }
-    </style>
 
+        .signature {
+            position: absolute;
+            right: 0;
+            bottom: 50px;
+            text-align: right;
+        }
+
+        .signature p {
+            margin: 0;
+        }
+
+        .signature-space {
+            margin-top: 80px;
+        }
+    </style>
 </head>
 
 <body>
@@ -68,6 +87,15 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- Tanda Tangan -->
+    <div class="signature">
+        <p>Jakarta, {{ tanggal_indonesia($akhir, false) }}</p>
+        <p><strong>Mengetahui,</strong></p>
+        <div class="signature-space"></div>
+        <p><strong><u>Nama Penanggung Jawab</u></strong></p>
+        <p>Admin Apotik</p>
+    </div>
 </body>
 
 </html>
