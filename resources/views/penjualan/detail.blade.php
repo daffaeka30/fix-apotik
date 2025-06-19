@@ -10,7 +10,7 @@
                     <table class="table table-striped table-bordered table-detail">
                         <thead>
                             <th width="5%">No</th>
-                            <th>Kode</th>
+                            <th>Kode Produk</th>
                             <th>Nama</th>
                             <th>Harga</th>
                             <th>Jumlah</th>

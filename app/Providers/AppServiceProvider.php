@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('auth.login', function ($view) {
             $view->with('setting', Setting::first());
         });
+        view()->composer('laporan.pdf', function ($view) {
+            $view->with('setting', Setting::first());
+        });
     }
 
     /**

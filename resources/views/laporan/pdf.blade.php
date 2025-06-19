@@ -70,9 +70,9 @@
 <body>
     {{-- Kop Surat --}}
     <div class="kop">
-        <h2>APOTEK SEHAT SENTOSA</h2>
-        <p>Jl. Kesehatan No. 123, Jakarta</p>
-        <p>Telp: (021) 12345678 | Email: apotek@sehat.com</p>
+        <h2>{{ $setting->nama_perusahaan }}</h2>
+        <p>{{ $setting->alamat }}</p>
+        <p>Telp: {{ $setting->telepon }} | Email: apotek@sehat.com</p>
     </div>
     <hr>
 
@@ -119,7 +119,7 @@
             <p><strong>Mengetahui,</strong></p>
             <div class="signature-space"></div>
             <p><strong><u>Nama Penanggung Jawab</u></strong></p>
-            <p>Admin Apotik</p>
+            <p>Owner Apotik</p>
         </div>
     </div>
 </body>

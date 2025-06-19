@@ -26,8 +26,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="nama_perusahaan" class="form-label">Nama Perusahaan</label>
-                        <input type="text" class="form-control" id="nama_perusahaan" name="nama_perusahaan" required
-                            autofocus>
+                        <input type="text" class="form-control" id="nama_perusahaan" name="nama_perusahaan" required>
                     </div>
 
                     <div class="mb-3">
