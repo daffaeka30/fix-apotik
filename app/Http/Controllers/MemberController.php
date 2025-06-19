@@ -43,7 +43,7 @@ class MemberController extends Controller
                 ';
             })
             ->addColumn('kode_member', function ($member) {
-                return '<span class="label label-success">' . $member->kode_member . '<span>';
+                return '<span class="badge bg-success">' . $member->kode_member . '<span>';
             })
             ->addColumn('aksi', function ($member) {
                 return '

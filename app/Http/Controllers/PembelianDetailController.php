@@ -51,7 +51,7 @@ class PembelianDetailController extends Controller
 
         foreach ($detail as $item) {
             $row = array();
-            $row['kode_produk'] = '<span class="label label-success">'. $item->produk['kode_produk'] .'</span>';
+            $row['kode_produk'] = '<span class="badge bg-success">'. $item->produk['kode_produk'] .'</span>';
             $row['nama_produk'] = $item->produk['nama_produk'];
             $row['harga_beli']  = 'Rp. ' . number_format($item->harga_beli, 0, ',', '.');
             $row['jumlah']      = '<input type="number" class="form-control input-sm quantity" data-id="'. $item->id_pembelian_detail .'" value="'. $item->jumlah .'">';

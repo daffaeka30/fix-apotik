@@ -17,11 +17,17 @@ class PenjualanDetailController extends Controller
         $member = Member::orderBy('nama')->get();
         $diskon = Setting::first()->diskon ?? 0;
 
-        // cek apakah ada transaksi yang sedang berjalan
         if ($id_penjualan = session('id_penjualan')) {
             $penjualan = Penjualan::find($id_penjualan);
-            $memberSelected = $penjualan->member ?? new Member();
 
+            // Cek jika transaksi sudah ada isinya
+            if ($penjualan && $penjualan->total_item > 0) {
+                // transaksi sudah selesai tapi masih disimpan di session
+                session()->forget('id_penjualan');
+                return redirect()->route('penjualan.index')->with('error', 'Transaksi sudah selesai dan tidak bisa diedit.');
+            }
+
+            $memberSelected = $penjualan->member ?? new Member();
             return view('penjualan_detail.index', compact('produk', 'member', 'diskon', 'id_penjualan', 'penjualan', 'memberSelected'));
         } else {
             if (auth()->user()->level == 1) {
@@ -32,6 +38,7 @@ class PenjualanDetailController extends Controller
         }
     }
 
+
     public function data($id)
     {
         $detail = PenjualanDetail::with('produk')
@@ -40,18 +47,18 @@ class PenjualanDetailController extends Controller
 
         $data = array();
         $total = 0;
-        $total_item = 0; 
+        $total_item = 0;
 
         foreach ($detail as $item) {
             $row = array();
-            $row['kode_produk'] = '<span class="label label-success">'. $item->produk['kode_produk'] .'</span>';
+            $row['kode_produk'] = '<span class="label label-success">' . $item->produk['kode_produk'] . '</span>';
             $row['nama_produk'] = $item->produk['nama_produk'];
             $row['harga_jual']  = 'Rp. ' . number_format($item->harga_jual, 0, ',', '.');
-            $row['jumlah']      = '<input type="number" class="form-control input-sm quantity" data-id="'. $item->id_penjualan_detail .'" value="'. $item->jumlah .'">';
+            $row['jumlah']      = '<input type="number" class="form-control input-sm quantity" data-id="' . $item->id_penjualan_detail . '" value="' . $item->jumlah . '">';
             $row['diskon']      = $item->diskon . '%';
             $row['subtotal']    = 'Rp. ' . number_format($item->subtotal, 0, ',', '.');
             $row['aksi']        = '<div class="btn-group">
-                                    <button onclick="deleteData(`'. route('transaksi.destroy', $item->id_penjualan_detail) .'`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
+                                    <button onclick="deleteData(`' . route('transaksi.destroy', $item->id_penjualan_detail) . '`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
                                 </div>';
             $data[] = $row;
 
@@ -61,8 +68,8 @@ class PenjualanDetailController extends Controller
 
         $data[] = [
             'kode_produk' => '
-                <div class="total hide">'. $total .'</div>
-                <div class="total_item hide">'. $total_item .'</div>',
+                <div class="total hide">' . $total . '</div>
+                <div class="total_item hide">' . $total_item . '</div>',
             'nama_produk' => '',
             'harga_jual'  => '',
             'jumlah'      => '',
@@ -70,7 +77,7 @@ class PenjualanDetailController extends Controller
             'subtotal'    => '',
             'aksi'        => '',
         ];
-        
+
         return datatables()
             ->of($data)
             ->addIndexColumn()
@@ -103,7 +110,7 @@ class PenjualanDetailController extends Controller
     {
         $detail = PenjualanDetail::find($id);
         $detail->jumlah = $request->jumlah;
-        $detail->subtotal = $detail->harga_jual * $request->jumlah - (($detail->diskon * $request->jumlah) / 100 * $detail->harga_jual); 
+        $detail->subtotal = $detail->harga_jual * $request->jumlah - (($detail->diskon * $request->jumlah) / 100 * $detail->harga_jual);
         $detail->update();
     }
 

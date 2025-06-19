@@ -125,7 +125,7 @@ class PembelianController extends Controller
             ->of($detail)
             ->addIndexColumn()
             ->addColumn('kode_produk', function ($detail) {
-                return '<span class="label label-success">' . $detail->produk->kode_produk . '</span>';
+                return '<span class="badge bg-success">' . $detail->produk->kode_produk . '</span>';
             })
             ->addColumn('nama_produk', function ($detail) {
                 return $detail->produk->nama_produk;

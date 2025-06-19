@@ -47,7 +47,7 @@ class ProdukController extends Controller
                 ';
             })
             ->addColumn('kode_produk', function ($produk) {
-                return '<span class="label label-success">' . $produk->kode_produk . '</span>';
+                return '<span class="badge bg-success">' . $produk->kode_produk . '</span>';
             })
             ->addColumn('harga_beli', function ($produk) {
                 return 'Rp. ' . format_uang($produk->harga_beli);
@@ -58,21 +58,21 @@ class ProdukController extends Controller
             ->addColumn('stok', function ($produk) {
                 return format_uang($produk->stok);
             })->addColumn('expired', function ($produk) {
-    $today = now()->toDateString();
-    $soon = now()->addDays(30)->toDateString();
-    $expiredDate = $produk->expired;
+                $today = now()->toDateString();
+                $soon = now()->addDays(30)->toDateString();
+                $expiredDate = $produk->expired;
 
-    if ($expiredDate < $today) {
-        // Sudah kadaluarsa
-        return '<span class="text-danger fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
-    } elseif ($expiredDate <= $soon) {
-        // Mendekati kadaluarsa (dalam 30 hari)
-        return '<span class="text-warning fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
-    } else {
-        // Masih aman
-        return tanggal_indonesia($expiredDate, false);
-    }
-})
+                if ($expiredDate < $today) {
+                    // Sudah kadaluarsa
+                    return '<span class="text-danger fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
+                } elseif ($expiredDate <= $soon) {
+                    // Mendekati kadaluarsa (dalam 30 hari)
+                    return '<span class="text-warning fw-bold">' . tanggal_indonesia($expiredDate, false) . '</span>';
+                } else {
+                    // Masih aman
+                    return tanggal_indonesia($expiredDate, false);
+                }
+            })
 
 
             ->addColumn('aksi', function ($produk) {
