@@ -72,7 +72,7 @@
     <div class="kop">
         <h2>{{ $setting->nama_perusahaan }}</h2>
         <p>{{ $setting->alamat }}</p>
-        <p>Telp: {{ $setting->telepon }} | Email: apotek@sehat.com</p>
+        <p>Telp: {{ $setting->telepon }} | Email: apotikpalmeriam@gmail.com</p>
     </div>
     <hr>
 
@@ -118,7 +118,7 @@
             <p>Jakarta, {{ tanggal_indonesia($akhir, false) }}</p>
             <p><strong>Mengetahui,</strong></p>
             <div class="signature-space"></div>
-            <p><strong><u>Nama Penanggung Jawab</u></strong></p>
+            <p><strong><u>Liem Hwei Giok</u></strong></p>
             <p>Owner Apotik</p>
         </div>
     </div>
