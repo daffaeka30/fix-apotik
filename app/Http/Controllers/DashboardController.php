@@ -42,7 +42,12 @@ class DashboardController extends Controller
 
         $tanggal_awal = date('Y-m-01');
 
-        $recent_order = Penjualan::with('member', 'penjualanDetail.produk')->orderBy('created_at', 'desc')->take(5)->get();
+        $recent_order = Penjualan::with('member', 'penjualanDetail.produk')
+            ->whereHas('penjualanDetail')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
         $low_stock_produk = Produk::where('stok', '<=', 5)->orderBy('stok', 'asc')->take(5)->get();
 
         $expired_soon = Produk::whereDate('expired', '>=', now())
