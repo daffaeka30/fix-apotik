@@ -55,8 +55,8 @@ Route::group(['middleware' => 'auth'], function () {
     // pembelian
     Route::get('/pembelian/data', [PembelianController::class, 'data'])
         ->name('pembelian.data');
-        Route::post('/pembelian/{id}/cancel', [PembelianController::class, 'cancel'])
-            ->name('pembelian.cancel');
+    Route::post('/pembelian/{id}/cancel', [PembelianController::class, 'cancel'])
+        ->name('pembelian.cancel');
     Route::get('/pembelian/{id}/create', [PembelianController::class, 'create'])
         ->name('pembelian.create');
     Route::resource('/pembelian', PembelianController::class)
@@ -79,6 +79,8 @@ Route::group(['middleware' => 'auth'], function () {
         ->name('penjualan.show');
     Route::delete('/penjualan/{id}', [PenjualanController::class, 'destroy'])
         ->name('penjualan.destroy');
+    Route::post('/penjualan/{id}/cancel', [PenjualanController::class, 'cancel'])
+        ->name('penjualan.cancel');
 
     
     Route::get('/transaksi/baru', [PenjualanController::class, 'create'])

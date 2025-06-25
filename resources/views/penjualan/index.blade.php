@@ -143,7 +143,7 @@
         }
 
         function cancelData(url) {
-            if (confirm('Batalkan pembelian ini dan kembalikan stok?')) {
+            if (confirm('Batalkan penjualan ini dan kembalikan stok?')) {
                 $.post(url, {
                         '_token': $('[name=csrf-token]').attr('content')
                     })
@@ -151,7 +151,7 @@
                         table.ajax.reload();
                     })
                     .fail(() => {
-                        alert('Tidak dapat membatalkan pembelian');
+                        alert('Tidak dapat membatalkan penjualan');
                     });
             }
         }

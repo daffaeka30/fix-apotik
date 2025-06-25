@@ -57,6 +57,7 @@ class PenjualanController extends Controller
                 return '
                 <div class="btn-action">
                     <button onclick="showDetail(`' . route('penjualan.show', $penjualan->id_penjualan) . '`)" class="btn btn-sm btn-info btn-icon"><i class="bx bx-show"></i></button>
+                    <button onclick="cancelData(`'. route('penjualan.cancel', $penjualan->id_penjualan) .'`)" class="btn btn-sm btn-warning btn-icon"><i class="bx bx-undo"></i></button>
                     <button onclick="deleteData(`' . route('penjualan.destroy', $penjualan->id_penjualan) . '`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
                 </div>
                 ';
@@ -130,7 +131,7 @@ class PenjualanController extends Controller
             ->make(true);
     }
 
-    public function destroy($id)
+    public function cancel($id)
     {
         $penjualan = Penjualan::find($id);
         $detail    = PenjualanDetail::where('id_penjualan', $penjualan->id_penjualan)->get();
@@ -147,6 +148,15 @@ class PenjualanController extends Controller
         $penjualan->delete();
 
         return response(null, 204);
+    }
+
+    public function destroy($id)
+    {
+        $penjualan = Penjualan::findOrFail($id);
+        PenjualanDetail::where('id_penjualan', $penjualan->id_penjualan)->delete();
+        $penjualan->delete();
+
+        return response()->json(['message' => 'Riwayat penjualan dihapus.']);
     }
 
     public function selesai()
