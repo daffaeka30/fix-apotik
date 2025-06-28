@@ -117,6 +117,12 @@
         @else
             <li class="menu-header small text-uppercase"><span class="menu-header-text">TRANSAKSI</span></li>
             <!-- Cards -->
+            <li class="menu-item {{ request()->routeIs('penjualan.index') ? 'active' : '' }}">
+                <a href="{{ route('penjualan.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-upload"></i>
+                    <div data-i18n="Basic">Penjualan</div>
+                </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
                 <a href="{{ route('transaksi.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bxs-cart-download"></i>

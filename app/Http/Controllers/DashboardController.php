@@ -60,7 +60,17 @@ class DashboardController extends Controller
         if (auth()->user()->level == '1') {
             return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan', 'recent_order', 'low_stock_produk', 'expired_soon'));
         } else {
-            return view('kasir.dashboard');
+            $today = date('Y-m-d');
+            $total_transaksi = Penjualan::whereDate('created_at', $today)->count();
+            $total_pendapatan = Penjualan::whereDate('created_at', $today)->sum('bayar');
+
+            $recent_order = Penjualan::with('member', 'penjualanDetail.produk')
+                ->whereHas('penjualanDetail')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+
+            return view('kasir.dashboard', compact('total_transaksi', 'total_pendapatan', 'recent_order'));
         }
     }
 }

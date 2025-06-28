@@ -124,7 +124,7 @@
                                         <td class="p-2">{{ $order->created_at->format('d-m-y') }}</td>
                                         <td class="p-2">{{ $order->member->nama ?? '-' }}</td>
                                         <td class="p-2">{{ $order->user->name ?? '' }}</td>
-                                        <td class="p-2">Rp {{ number_format($order->total_harga, 0) }}</td>
+                                        <td class="p-2">Rp {{ number_format($order->bayar, 0) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
