@@ -177,7 +177,7 @@
                                         @foreach ($expired_soon as $product)
                                             <tr class="border-b">
                                                 <td class="p-2">{{ $product->nama_produk }}</td>
-                                                <td class="p-2 text-red-600 font-semibold">
+                                                <td class="p-2 text-yellow-600 font-semibold">
                                                     {{ \Carbon\Carbon::parse($product->expired)->format('d-m-Y') }}
                                                 </td>
                                             </tr>
