@@ -100,38 +100,57 @@ class ProdukController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        // Validasi terlebih dahulu
-        $request->validate([
-            'nama_produk' => 'required|string|max:255',
-            'stok' => 'required|integer|min:0',
-            'expired' => 'required|date|after_or_equal:today'
-        ]);
+{
+    $request->validate([
+        'nama_produk' => 'required|string|max:255',
+        'stok' => 'required|integer|min:0',
+        'expired' => 'required|date|after_or_equal:today',
+        'merk' => 'required|string|max:255',
+        'id_kategori' => 'required|exists:kategori,id_kategori',
+    ]);
 
-        // Generate kode produk
-        $prefix = 'OB';
-        $dateCode = date('Ym'); // Contoh: 202506
+    // Ambil kategori
+    $kategori = Kategori::find($request->id_kategori);
 
-        // Cari produk terakhir bulan ini
-        $lastProduk = Produk::where('kode_produk', 'like', "$prefix-$dateCode-%")
-            ->orderBy('kode_produk', 'desc')
-            ->first();
+    // Mapping kategori ke prefix
+    $prefixMap = [
+        'Bebas' => 'OB',
+        'Bebas Terbatas' => 'OBT',
+        'Narkotika' => 'N',
+        'Jamu' => 'J',
+        'Herbal' => 'H',
+        'Fitofarmaka' => 'F',
+    ];
 
-        if ($lastProduk) {
-            $lastNumber = (int)substr($lastProduk->kode_produk, -4);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
+    $prefix = $prefixMap[$kategori->nama_kategori] ?? 'X';
+
+    // Format merk
+    $brand = strtoupper(preg_replace('/\s+/', '', $request->merk));
+
+    // Ambil semua kode_produk dan cari nomor terbesar
+    $existingCodes = Produk::pluck('kode_produk');
+    $maxNumber = 0;
+
+    foreach ($existingCodes as $code) {
+        $parts = explode('-', $code);
+        $number = (int)end($parts);
+        if ($number > $maxNumber) {
+            $maxNumber = $number;
         }
-
-        $kodeProduk = "{$prefix}-{$dateCode}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-        $request['kode_produk'] = $kodeProduk;
-
-        // Simpan produk
-        Produk::create($request->all());
-
-        return response()->json('Data berhasil disimpan', 200);
     }
+
+    $urutan = str_pad($maxNumber + 1, 3, '0', STR_PAD_LEFT);
+
+    // Gabungkan kode
+    $kodeProduk = "$prefix-$brand-$urutan";
+    $request['kode_produk'] = $kodeProduk;
+
+    Produk::create($request->all());
+
+    return response()->json('Data berhasil disimpan', 200);
+}
+
+
 
 
 
