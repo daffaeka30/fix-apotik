@@ -27,6 +27,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="5%" class="text-center">No</th>
+                                <th class="text-center">Ikon</th>
                                 <th class="text-center">Kategori</th>
                                 <th width="15%" class="text-center">Aksi</th>
                             </tr>
@@ -57,6 +58,12 @@
                         data: 'DT_RowIndex',
                         searchable: false,
                         sortable: false
+                    },
+                    {
+                        data: 'ikon',
+                        searchable: false,
+                        orderable: false,
+                        className: 'text-center'
                     },
                     {
                         data: 'nama_kategori'

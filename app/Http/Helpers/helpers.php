@@ -85,3 +85,26 @@ function tambah_nol_didepan($value, $threshold = null)
 {
     return sprintf("%0" . $threshold . "s", $value);
 }
+
+function getIconPath($kategori)
+{
+    $kategori = strtolower($kategori);
+
+    if (str_contains($kategori, 'bebas terbatas')) {
+        return 'image/icon_bebas_terbatas.png';
+    } elseif (str_contains($kategori, 'bebas')) {
+        return 'image/icon_bebas.png';
+    } elseif (str_contains($kategori, 'narkotika')) {
+        return 'image/icon_narkotika.png';
+    } elseif (str_contains($kategori, 'keras') || str_contains($kategori, 'tidak bebas')) {
+        return 'image/icon_keras.png';
+    } elseif (str_contains($kategori, 'jamu')) {
+        return 'image/icon_jamu.png';
+    } elseif (str_contains($kategori, 'herbal')) {
+        return 'image/icon_herbal.png';
+    } elseif (str_contains($kategori, 'fitofarmaka')) {
+        return 'image/icon_fitofarmaka.png';
+    }
+
+    return 'image/default.png'; // fallback
+}

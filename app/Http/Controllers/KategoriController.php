@@ -33,23 +33,27 @@ class KategoriController extends Controller
         return datatables()
             ->of($kategori)
             ->addIndexColumn()
+            ->addColumn('ikon', function ($kategori) {
+                return '<div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                <img src="' . asset(getIconPath($kategori->nama_kategori)) . '" width="24">
+            </div>';
+            })
             ->addColumn('aksi', function ($kategori) {
                 return '
-            <div class="btn-action">
-                <button onclick="editForm(`'. route('kategori.update', $kategori->id_kategori) .'`)" class="btn btn-sm btn-info btn-icon">
-                    <i class="bx bx-edit"></i>
-                </button>
-            <button onclick="deleteData(`'. route('kategori.destroy', $kategori->id_kategori) .'`)" class="btn btn-sm btn-danger btn-icon">
-                <i class="bx bx-trash"></i>
-            </button>
-            </div>
+                <div class="btn-action">
+                    <button onclick="editForm(`' . route('kategori.update', $kategori->id_kategori) . '`)" class="btn btn-sm btn-info btn-icon">
+                        <i class="bx bx-edit"></i>
+                    </button>
+                    <button onclick="deleteData(`' . route('kategori.destroy', $kategori->id_kategori) . '`)" class="btn btn-sm btn-danger btn-icon">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </div>
             ';
-
             })
-
-            ->rawColumns(['aksi'])
+            ->rawColumns(['aksi', 'ikon'])
             ->make(true);
     }
+
 
     /**
      * Show the form for creating a new resource.
