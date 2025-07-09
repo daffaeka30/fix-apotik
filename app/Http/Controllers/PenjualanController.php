@@ -57,7 +57,7 @@ class PenjualanController extends Controller
                 return '
                 <div class="btn-action">
                     <button onclick="showDetail(`' . route('penjualan.show', $penjualan->id_penjualan) . '`)" class="btn btn-sm btn-info btn-icon"><i class="bx bx-show"></i></button>
-                    <button onclick="cancelData(`'. route('penjualan.cancel', $penjualan->id_penjualan) .'`)" class="btn btn-sm btn-warning btn-icon"><i class="bx bx-undo"></i></button>
+                    <button onclick="cancelData(`' . route('penjualan.cancel', $penjualan->id_penjualan) . '`)" class="btn btn-sm btn-warning btn-icon"><i class="bx bx-undo"></i></button>
                     <button onclick="deleteData(`' . route('penjualan.destroy', $penjualan->id_penjualan) . '`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
                 </div>
                 ';
@@ -85,6 +85,14 @@ class PenjualanController extends Controller
 
     public function store(Request $request)
     {
+
+        $request->validate([
+            'total' => 'required|numeric|min:1',
+            'diterima' => 'required|numeric|min:' . $request->bayar,
+        ], [
+            'total.min' => 'Transaksi tidak boleh kosong',
+            'diterima.min' => 'Uang diterima kurang dari total bayar',
+        ]);
         $penjualan = Penjualan::findOrFail($request->id_penjualan);
 
         $penjualan->id_member = $request->id_member;

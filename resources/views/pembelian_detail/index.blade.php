@@ -56,9 +56,18 @@
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
-                    <tr><th width="100px">Supplier</th><td>: {{ $supplier->nama }}</td></tr>
-                    <tr><th>Telepon</th><td>: {{ $supplier->telepon }}</td></tr>
-                    <tr><th>Alamat</th><td>: {{ $supplier->alamat }}</td></tr>
+                    <tr>
+                        <th width="100px">Supplier</th>
+                        <td>: {{ $supplier->nama }}</td>
+                    </tr>
+                    <tr>
+                        <th>Telepon</th>
+                        <td>: {{ $supplier->telepon }}</td>
+                    </tr>
+                    <tr>
+                        <th>Alamat</th>
+                        <td>: {{ $supplier->alamat }}</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -74,7 +83,8 @@
                                 <input type="hidden" name="id_produk" id="id_produk">
                                 <input type="hidden" name="id_pembelian" id="id_pembelian" value="{{ $id_pembelian }}">
                                 <input type="text" name="kode_produk" id="kode_produk" class="form-control">
-                                <button type="button" onclick="tampilProduk()" class="btn btn-info"><i class="fa fa-arrow-right"></i></button>
+                                <button type="button" onclick="tampilProduk()" class="btn btn-info"><i
+                                        class="fa fa-arrow-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -116,7 +126,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="diskon" class="form-label">Diskon</label>
-                                <input type="number" name="diskon" id="diskon" class="form-control" value="{{ $diskon }}">
+                                <input type="number" name="diskon" id="diskon" class="form-control"
+                                    value="{{ $diskon }}">
                             </div>
                             <div class="mb-3">
                                 <label for="bayarrp" class="form-label">Bayar</label>
@@ -124,7 +135,8 @@
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary btn-simpan"><i class="bx bx-save"></i> Simpan Transaksi</button>
+                                <button type="submit" class="btn btn-primary btn-simpan"><i class="bx bx-save"></i> Simpan
+                                    Transaksi</button>
                             </div>
                         </form>
                     </div>
@@ -227,9 +239,25 @@
                 loadForm($(this).val());
             });
 
-            $('.btn-simpan').on('click', function() {
+            $('.btn-simpan').on('click', function(e) {
+                e.preventDefault();
+
+                let total = parseInt($('#total').val()) || 0;
+
+                if (total <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Transaksi Kosong!',
+                        text: 'Silakan tambahkan produk terlebih dahulu sebelum menyimpan.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
                 $('.form-pembelian').submit();
             });
+
         });
 
         function tampilProduk() {

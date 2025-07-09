@@ -34,7 +34,10 @@ class PembelianController extends Controller
 
     public function data()
     {
-        $pembelian = Pembelian::orderBy('id_pembelian', 'desc')->get();
+        $pembelian = Pembelian::with('supplier')
+            ->where('total_item', '>', 0) // HANYA tampilkan jika total item lebih dari 0
+            ->orderBy('id_pembelian', 'desc')
+            ->get();
 
         return datatables()
             ->of($pembelian)
@@ -61,10 +64,10 @@ class PembelianController extends Controller
                 return '
                 <div class="btn-action">
                     <button onclick="showDetail(`' . route('pembelian.show', $pembelian->id_pembelian) . '`)" class="btn btn-sm btn-info btn-icon"><i class="bx bx-show"></i></button>
-                    <button onclick="cancelData(`'. route('pembelian.cancel', $pembelian->id_pembelian) .'`)" class="btn btn-sm btn-warning btn-icon"><i class="bx bx-undo"></i></button>
+                    <button onclick="cancelData(`' . route('pembelian.cancel', $pembelian->id_pembelian) . '`)" class="btn btn-sm btn-warning btn-icon"><i class="bx bx-undo"></i></button>
                     <button onclick="deleteData(`' . route('pembelian.destroy', $pembelian->id_pembelian) . '`)" class="btn btn-sm btn-danger btn-icon"><i class="bx bx-trash"></i></button>
                 </div>
-                ';
+            ';
             })
             ->rawColumns(['aksi'])
             ->make(true);
@@ -95,6 +98,10 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->total_item < 1 || $request->total < 1) {
+            return redirect()->back()->with('transaksi_kosong', true);
+        }
+
         $pembelian = Pembelian::findOrFail($request->id_pembelian);
 
         $pembelian->total_item = $request->total_item;
@@ -111,7 +118,7 @@ class PembelianController extends Controller
             $produk->update();
         }
 
-        return redirect()->route('pembelian.index');
+        return redirect()->route('pembelian.index')->with('success', 'Transaksi berhasil disimpan.');
     }
 
     /**
