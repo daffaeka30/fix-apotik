@@ -76,69 +76,80 @@
     </div>
 @endsection
 @push('scripts')
-    <script>
-        $(function() {
-            // Sembunyikan alert saat awal load halaman
-            $('.alert').hide();
+<script>
+    $(function () {
+        showData(); // Load data saat halaman dibuka
 
-            // Load data saat halaman dibuka
-            showData();
+        $('.alert').hide(); // Hide alert default bootstrap (jika belum dihapus)
 
-            // Tangani submit form
-            $('.form-setting').validator().on('submit', function(e) {
-                if (!e.preventDefault()) {
-                    $.ajax({
-                            url: $('.form-setting').attr('action'),
-                            type: $('.form-setting').attr('method'),
-                            data: new FormData($('.form-setting')[0]),
-                            async: false,
-                            processData: false,
-                            contentType: false
-                        })
-                        .done(response => {
-                            showData(); // muat ulang data dari server
-                            $('.alert').fadeIn(); // tampilkan alert sukses
-
-                            setTimeout(() => {
-                                $('.alert').fadeOut(); // sembunyikan lagi setelah 3 detik
-                            }, 3000);
-                        })
-                        .fail(errors => {
-                            alert('Tidak dapat menyimpan data');
-                            return;
-                        });
-                }
-            });
-        });
-
-
-        function showData() {
-            $.get('{{ route('setting.show') }}')
+        // Tangani submit form dengan ajax
+        $('.form-setting').validator().on('submit', function (e) {
+            if (!e.preventDefault()) {
+                $.ajax({
+                    url: $('.form-setting').attr('action'),
+                    type: $('.form-setting').attr('method'),
+                    data: new FormData($('.form-setting')[0]),
+                    processData: false,
+                    contentType: false
+                })
                 .done(response => {
-                    $('[name=nama_perusahaan]').val(response.nama_perusahaan);
-                    $('[name=telepon]').val(response.telepon);
-                    $('[name=alamat]').val(response.alamat);
-                    $('[name=diskon]').val(response.diskon);
-                    $('[name=tipe_nota]').val(response.tipe_nota);
-                    $('title').text(response.nama_perusahaan + ' | Pengaturan');
-
-                    let words = response.nama_perusahaan.split(' ');
-                    let word = '';
-                    words.forEach(w => {
-                        word += w.charAt(0);
+                    showData(); // reload tampilan data
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Pengaturan berhasil disimpan.',
+                        timer: 2500,
+                        showConfirmButton: false
                     });
-                    $('.logo-mini').text(word);
-                    $('.logo-lg').text(response.nama_perusahaan);
-
-                    $('.tampil-logo').html(`<img src="{{ url('/') }}${response.path_logo}" width="200">`);
-                    $('.tampil-kartu-member').html(
-                        `<img src="{{ url('/') }}${response.path_kartu_member}" width="300">`);
-                    $('[rel=icon]').attr('href', `{{ url('/') }}${response.path_logo}`);
                 })
                 .fail(errors => {
-                    alert('Tidak dapat menampilkan data');
-                    return;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat menyimpan data.'
+                    });
                 });
+            }
+        });
+    });
+
+    function showData() {
+        $.get('{{ route('setting.show') }}')
+            .done(response => {
+                $('[name=nama_perusahaan]').val(response.nama_perusahaan);
+                $('[name=telepon]').val(response.telepon);
+                $('[name=alamat]').val(response.alamat);
+                $('[name=diskon]').val(response.diskon);
+                $('[name=tipe_nota]').val(response.tipe_nota);
+
+                $('title').text(`${response.nama_perusahaan} | Pengaturan`);
+
+                // Inisialisasi logo mini dan besar
+                let words = response.nama_perusahaan.split(' ');
+                let singkatan = words.map(w => w.charAt(0)).join('');
+                $('.logo-mini').text(singkatan);
+                $('.logo-lg').text(response.nama_perusahaan);
+
+                $('.tampil-logo').html(`<img src="{{ url('/') }}${response.path_logo}" width="200">`);
+                $('.tampil-kartu-member').html(`<img src="{{ url('/') }}${response.path_kartu_member}" width="300">`);
+                $('[rel=icon]').attr('href', `{{ url('/') }}${response.path_logo}`);
+            })
+            .fail(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Tidak dapat menampilkan data.'
+                });
+            });
+    }
+
+    function preview(selector, file, width = 200) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            $(selector).html(`<img src="${e.target.result}" width="${width}">`);
         }
-    </script>
+        reader.readAsDataURL(file);
+    }
+</script>
 @endpush
+

@@ -74,55 +74,82 @@
 @endsection
 
 @push('scripts')
-    <script>
-        const originalImg = '{{ url($profil->foto ?? '/') }}';
+<script>
+    const originalImg = '{{ url($profil->foto ?? asset('image/user.jpg')) }}';
 
-        function preview(selector, file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector(selector).src = e.target.result;
-            }
-            reader.readAsDataURL(file);
+    function preview(selector, file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.querySelector(selector).src = e.target.result;
         }
+        reader.readAsDataURL(file);
+    }
 
-        function resetImage() {
-            document.getElementById('img-preview').src = originalImg;
-            document.getElementById('foto').value = '';
-        }
+    function resetImage() {
+        $('#img-preview').attr('src', originalImg);
+        $('#foto').val('');
+    }
 
-        $(function() {
-            $('#old_password').on('keyup', function() {
-                const isFilled = $(this).val() !== "";
-                $('#password, #password_confirmation').attr('required', isFilled);
-            });
+    $(function() {
+        // Set field password baru & konfirmasi wajib jika password lama diisi
+        $('#old_password').on('keyup', function() {
+            const isFilled = $(this).val() !== "";
+            $('#password, #password_confirmation').attr('required', isFilled);
+        });
 
-            $('#form-profil').on('submit', function(e) {
-                e.preventDefault();
+        // Submit form profil via AJAX
+        $('#form-profil').on('submit', function(e) {
+            e.preventDefault();
 
-                const form = $(this)[0];
-                const data = new FormData(form);
+            const form = $(this)[0];
+            const data = new FormData(form);
 
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: data,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $('#name').val(response.name);
-                        $('#img-preview').attr('src', `{{ url('/') }}/${response.foto}`);
-                        $('#alert-success').removeClass('d-none');
-                        setTimeout(() => $('#alert-success').addClass('d-none'), 3000);
-                    },
-                    error: function(errors) {
-                        if (errors.status == 422) {
-                            alert(errors.responseJSON);
-                        } else {
-                            alert('Gagal menyimpan data');
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#name').val(response.name);
+                    $('#img-preview').attr('src', `{{ url('/') }}/${response.foto}`);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Profil berhasil diperbarui',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                },
+                error: function(errors) {
+                    if (errors.status === 422) {
+                        let message = '';
+                        const res = errors.responseJSON.errors;
+                        for (const key in res) {
+                            if (res.hasOwnProperty(key)) {
+                                message += `${res[key][0]}<br>`;
+                            }
                         }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            html: message,
+                            confirmButtonColor: '#d33'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Terjadi kesalahan saat menyimpan data.',
+                            confirmButtonColor: '#d33'
+                        });
                     }
-                });
+                }
             });
         });
-    </script>
+    });
+</script>
 @endpush
+

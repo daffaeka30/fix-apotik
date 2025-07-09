@@ -116,44 +116,87 @@
                         data: 'subtotal'
                     },
                 ]
-            })
+            });
         });
 
         function showDetail(url) {
             $('#modal-detail').modal('show');
-
             table1.ajax.url(url);
             table1.ajax.reload();
         }
 
         function deleteData(url) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content'),
-                        '_method': 'delete'
-                    })
-                    .done((response) => {
-                        table.ajax.reload();
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menghapus data');
-                        return;
-                    });
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content'),
+                            '_method': 'delete'
+                        })
+                        .done((response) => {
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail((errors) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menghapus data.'
+                            });
+                        });
+                }
+            });
         }
 
         function cancelData(url) {
-            if (confirm('Batalkan penjualan ini dan kembalikan stok?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content')
-                    })
-                    .done(() => {
-                        table.ajax.reload();
-                    })
-                    .fail(() => {
-                        alert('Tidak dapat membatalkan penjualan');
-                    });
-            }
+            Swal.fire({
+                title: 'Batalkan penjualan?',
+                text: 'Stok akan dikembalikan seperti semula.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content')
+                        })
+                        .done(() => {
+                            table.ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Dibatalkan!',
+                                text: 'Penjualan berhasil dibatalkan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat membatalkan penjualan.'
+                            });
+                        });
+                }
+            });
         }
     </script>
 @endpush

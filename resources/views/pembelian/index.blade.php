@@ -56,6 +56,7 @@
     @includeIf('pembelian.detail')
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let table, table1;
 
@@ -101,6 +102,7 @@
             });
 
             $('.table-supplier').DataTable();
+
             table1 = $('.table-detail').DataTable({
                 processing: true,
                 bsort: false,
@@ -126,7 +128,7 @@
                         data: 'subtotal'
                     },
                 ]
-            })
+            });
         });
 
         function addForm() {
@@ -135,52 +137,94 @@
 
         function showDetail(url) {
             $('#modal-detail').modal('show');
-
             table1.ajax.url(url);
             table1.ajax.reload();
         }
 
         function deleteData(url) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content'),
-                        '_method': 'delete'
-                    })
-                    .done((response) => {
-                        table.ajax.reload();
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menghapus data');
-                        return;
-                    });
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content'),
+                            '_method': 'delete'
+                        })
+                        .done((response) => {
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail((errors) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menghapus data.'
+                            });
+                        });
+                }
+            });
         }
 
         function cancelData(url) {
-            if (confirm('Batalkan pembelian ini dan kembalikan stok?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content')
-                    })
-                    .done(() => {
-                        table.ajax.reload();
-                    })
-                    .fail(() => {
-                        alert('Tidak dapat membatalkan pembelian');
-                    });
-            }
+            Swal.fire({
+                title: 'Batalkan pembelian?',
+                text: 'Stok akan dikembalikan seperti semula.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content')
+                        })
+                        .done(() => {
+                            table.ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Dibatalkan!',
+                                text: 'Pembelian berhasil dibatalkan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat membatalkan pembelian.'
+                            });
+                        });
+                }
+            });
         }
     </script>
 
     @if (session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{{ session('success') }}',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
-    </script>
-@endif
-
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        </script>
+    @endif
 @endpush

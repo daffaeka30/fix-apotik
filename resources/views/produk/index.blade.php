@@ -133,18 +133,27 @@
                         .done((response) => {
                             $('#modal-form').modal('hide');
                             table.ajax.reload();
-                            alert('Data berhasil disimpan');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil disimpan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         })
-                        .fail((errors) => {
-                            alert('Tidak dapat menyimpan data');
-                            return;
+                        .fail(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menyimpan data.'
+                            });
                         });
                 }
             });
 
             $('[name=select_all]').on('click', function() {
-                $(':checkbox').prop('checked', this.checked)
-            })
+                $(':checkbox').prop('checked', this.checked);
+            });
         });
 
         function addForm(url) {
@@ -179,53 +188,108 @@
                     $('#modal-form [name=satuan]').val(response.satuan);
                     $('#modal-form [name=expired]').val(response.expired);
                 })
-                .fail((errors) => {
-                    alert('Tidak dapat menampilkan data');
-                    return;
+                .fail(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat menampilkan data.'
+                    });
                 });
         }
 
         function deleteData(url) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content'),
-                        '_method': 'delete'
-                    })
-                    .done((response) => {
-                        table.ajax.reload();
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menghapus data');
-                        return;
-                    });
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content'),
+                            '_method': 'delete'
+                        })
+                        .done((response) => {
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail((errors) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menghapus data.'
+                            });
+                        });
+                }
+            });
         }
 
         function deleteSelected(url) {
             if ($('input:checked').length > 1) {
-                if (confirm('Yakin ingin menghapus data terpilih?')) {
-                    $.post(url, $('.form-produk').serialize())
-                        .done((response) => {
-                            table.ajax.reload();
-                        })
-                        .fail((errors) => {
-                            alert('Tidak dapat menghapus data');
-                            return;
-                        });
-                }
+                Swal.fire({
+                    title: 'Yakin ingin menghapus semua data terpilih?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post(url, $('.form-produk').serialize())
+                            .done(() => {
+                                table.ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: 'Data berhasil dihapus.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            })
+                            .fail(() => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Tidak dapat menghapus data.'
+                                });
+                            });
+                    }
+                });
             } else {
-                alert('Pilih data yang akan dihapus');
-                return;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Data',
+                    text: 'Pilih minimal 2 data untuk dihapus.'
+                });
             }
         }
 
         function cetakBarcode(url) {
-            if ($('input:checked').length < 1) {
-                alert('Pilih data yang akan dicetak');
-                return;
-            } else if ($('input:checked').length < 3) {
-                alert('Pilih minimal 3 data untuk dicetak');
-                return;
+            const selectedCount = $('input:checked').length;
+
+            if (selectedCount < 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Data',
+                    text: 'Pilih data yang akan dicetak.'
+                });
+            } else if (selectedCount < 3) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Minimal 3 Data',
+                    text: 'Pilih minimal 3 data untuk dicetak.'
+                });
             } else {
                 $('.form-produk')
                     .attr('target', '_blank')

@@ -81,14 +81,23 @@
             $('#modal-form').validator().on('submit', function(e) {
                 if (!e.preventDefault()) {
                     $.post($('#modal-form form').attr('action'), $('#modal-form form').serialize())
-                        .done((response) => {
+                        .done(() => {
                             $('#modal-form').modal('hide');
                             table.ajax.reload();
-                            alert('Data berhasil disimpan');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil disimpan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         })
-                        .fail((errors) => {
-                            alert('Tidak dapat menyimpan data');
-                            return;
+                        .fail(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menyimpan data.'
+                            });
                         });
                 }
             });
@@ -97,7 +106,6 @@
         function addForm(url) {
             $('#modal-form').modal('show');
             $('#modal-form .modal-title').text('Tambah Pengeluaran');
-
             $('#modal-form form')[0].reset();
             $('#modal-form form').attr('action', url);
             $('#modal-form [name=_method]').val('post');
@@ -107,7 +115,6 @@
         function editForm(url) {
             $('#modal-form').modal('show');
             $('#modal-form .modal-title').text('Edit Pengeluaran');
-
             $('#modal-form form')[0].reset();
             $('#modal-form form').attr('action', url);
             $('#modal-form [name=_method]').val('put');
@@ -118,26 +125,51 @@
                     $('#modal-form [name=deskripsi]').val(response.deskripsi);
                     $('#modal-form [name=nominal]').val(response.nominal);
                 })
-                .fail((errors) => {
-                    alert('Tidak dapat menampilkan data');
-                    return;
+                .fail(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat menampilkan data.'
+                    });
                 });
         }
 
         function deleteData(url) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content'),
-                        '_method': 'delete'
-                    })
-                    .done((response) => {
-                        table.ajax.reload();
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menghapus data');
-                        return;
-                    });
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content'),
+                            '_method': 'delete'
+                        })
+                        .done((response) => {
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail((errors) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menghapus data.'
+                            });
+                        });
+                }
+            });
         }
     </script>
 @endpush
