@@ -86,13 +86,10 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
-            'total' => 'required|numeric|min:1',
-            'diterima' => 'required|numeric|min:' . $request->bayar,
-        ], [
-            'total.min' => 'Transaksi tidak boleh kosong',
-            'diterima.min' => 'Uang diterima kurang dari total bayar',
-        ]);
+        if ($request->total_item < 1 || $request->total < 1 || $request->diterima < 1) {
+            return redirect()->back()->with('transaksi_kosong', true);
+        }
+
         $penjualan = Penjualan::findOrFail($request->id_penjualan);
 
         $penjualan->id_member = $request->id_member;

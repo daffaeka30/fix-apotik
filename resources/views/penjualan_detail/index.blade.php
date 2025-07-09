@@ -138,7 +138,7 @@
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary btn-simpan">
                                     <i class="bx bx-save"></i> Simpan Transaksi
                                 </button>
                             </div>
@@ -284,31 +284,28 @@
             });
 
             $('.btn-simpan').on('click', function(e) {
-                e.preventDefault(); // cegah submit default
+                e.preventDefault();
 
                 let total = parseInt($('#total').val()) || 0;
-                let bayar = parseInt($('#bayar').val()) || 0;
                 let diterima = parseInt($('#diterima').val()) || 0;
 
                 if (total <= 0) {
-                    alert('Transaksi kosong. Silakan tambahkan produk terlebih dahulu.');
-                    return;
+                    return Swal.fire('Transaksi Kosong!', 'Silakan tambahkan produk.', 'warning');
                 }
 
                 if (diterima <= 0) {
-                    alert('Masukkan jumlah uang yang diterima.');
-                    $('#diterima').focus();
-                    return;
+                    return Swal.fire('Pembayaran Tidak Sesuai!', 'Masukkan jumlah pembayaran yang valid.',
+                        'warning');
                 }
 
-                if (diterima < bayar) {
-                    alert('Uang diterima kurang dari total bayar.');
-                    $('#diterima').focus();
-                    return;
+                if (diterima < total) {
+                    return Swal.fire('Pembayaran Kurang!',
+                        'Jumlah yang diterima kurang dari total pembayaran.', 'warning');
                 }
 
                 $('.form-penjualan').submit();
             });
+
 
         });
 
@@ -395,22 +392,5 @@
                     return;
                 })
         }
-
-        @if ($errors->any())
-            let errorMessages = '';
-            @foreach ($errors->all() as $error)
-                errorMessages += ' {{ $error }}<br>';
-            @endforeach
-
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error',
-                html: errorMessages,
-                confirmButtonText: 'OK',
-                customClass: {
-                    popup: 'swal2-border-radius'
-                }
-            });
-        @endif
     </script>
 @endpush
