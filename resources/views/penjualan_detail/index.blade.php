@@ -260,8 +260,12 @@
                         });
                     })
                     .fail(errors => {
-                        alert('Tidak dapat menyimpan data');
-                        return;
+                        Swal.fire(
+                            'Stok Tidak Cukup!',
+                            errors.responseJSON?.message || 'Jumlah melebihi stok tersedia',
+                            'warning'
+                        );
+                        table.ajax.reload(() => loadForm($('#diskon').val()));
                     });
             });
 
@@ -331,7 +335,11 @@
                     table.ajax.reload(() => loadForm($('#diskon').val()))
                 })
                 .fail(errors => {
-                    alert('Tidak dapat menyimpan data');
+                    Swal.fire(
+                        'Gagal Menambahkan Produk!',
+                        errors.responseJSON?.message || 'Tidak dapat menyimpan data',
+                        'warning'
+                    );
                     return;
                 });
         }
@@ -354,20 +362,43 @@
         }
 
         function deleteData(url) {
-            if (confirm('Yakin ingin menghapus data terpilih?')) {
-                $.post(url, {
-                        '_token': $('[name=csrf-token]').attr('content'),
-                        '_method': 'delete'
-                    })
-                    .done((response) => {
-                        table.ajax.reload(() => loadForm($('#diskon').val()));
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menghapus data');
-                        return;
-                    });
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post(url, {
+                            '_token': $('[name=csrf-token]').attr('content'),
+                            '_method': 'delete'
+                        })
+                        .done((response) => {
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .fail((errors) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Tidak dapat menghapus data.'
+                            });
+                        });
+                }
+            });
         }
+
 
         function loadForm(diskon = 0, diterima = 0) {
             $('#total').val($('.total').text());
