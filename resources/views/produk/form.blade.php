@@ -67,7 +67,7 @@
                     <div class="mb-3 row">
                         <label for="stok" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="number" name="stok" id="stok" class="form-control" required value="0">
+                            <input type="number" name="stok" id="stok" class="form-control" required value="0" min="0">
                         </div>
                     </div>
 
