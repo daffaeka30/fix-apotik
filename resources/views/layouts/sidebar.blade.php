@@ -78,16 +78,10 @@
                     <div data-i18n="Basic">Penjualan</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
-                <a href="{{ route('transaksi.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bxs-cart-download"></i>
-                    <div data-i18n="Basic">Transaksi Aktif</div>
-                </a>
-            </li>
-            <li class="menu-item {{ request()->routeIs('transaksi.baru') ? 'active' : '' }}">
+            <li class="menu-item {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">
                 <a href="{{ route('transaksi.baru') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-cart"></i>
-                    <div data-i18n="Basic">Transaksi Baru</div>
+                    <div data-i18n="Basic">Transaksi Penjualan</div>
                 </a>
             </li>
 
@@ -123,16 +117,10 @@
                     <div data-i18n="Basic">Penjualan</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
-                <a href="{{ route('transaksi.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bxs-cart-download"></i>
-                    <div data-i18n="Basic">Transaksi Aktif</div>
-                </a>
-            </li>
             <li class="menu-item {{ request()->routeIs('transaksi.baru') ? 'active' : '' }}">
                 <a href="{{ route('transaksi.baru') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-cart"></i>
-                    <div data-i18n="Basic">Transaksi Baru</div>
+                    <div data-i18n="Basic">Transaksi Penjualan</div>
                 </a>
             </li>
         @endif
